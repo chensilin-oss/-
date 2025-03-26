@@ -1,0 +1,46 @@
+# 导入Appium相关库，webdriver用于创建驱动，UiAutomator2Options用于Android配置
+from appium import webdriver
+from appium.options.android import UiAutomator2Options
+import time  # 导入时间模块用于等待操作
+
+# 配置Desired Capabilities字典（设备能力和测试配置）
+desired_caps = {
+    "platformName": "Android",          # 指定移动平台为Android
+    "deviceName": "89ZLCUGUCE79MZI7",   # 设备序列号（需替换为实际设备ID）
+    "appium:appPackage": "com.youku.phone",       # 被测APP的包名
+    "appium:appActivity": "com.youku.v2.HomePageEntry",  # 被测APP的启动Activity
+    "appium:automationName": "UiAutomator2",      # 使用UiAutomator2引擎
+    "appium:noReset": True,             # 不重置应用状态（保留登录信息等）
+    "appium:androidInstallTimeout": 180000,        # APK安装超时时间（180秒）
+    "appium:uiautomator2ServerLaunchTimeout": 180000,  # UiAutomator2服务器启动超时
+    "appium:adbExecTimeout": 180000,     # ADB命令执行超时时间
+    "appium:allowTestPackages": True,    # 允许安装测试包
+    "appium:enforceAppInstall": False,   # 不强制重新安装应用
+    "appium:adbInstallOptions": ["-t", "--abi armeabi-v7a"]  # 指定安装架构
+}
+
+# 将配置字典转换为UiAutomator2选项对象
+options = UiAutomator2Options().load_capabilities(desired_caps)
+
+try:
+    # 创建Appium WebDriver连接（连接到本地Appium服务器）
+    # 注意：根据Appium版本选择URL格式（1.x版本用/wd/hub，2.x版本直接根路径）
+    driver = webdriver.Remote("http://127.0.0.1:4723/wd/hub", options=options)
+    
+    # 连接成功提示
+    print("连接成功！等待10秒...")
+    time.sleep(10)  # 等待10秒让APP完成初始化
+    
+    # 此处可添加其他自动化操作（如元素定位、点击等）
+    print("执行其他操作...")
+
+except Exception as e:
+    # 异常处理，打印错误信息
+    print(f"连接失败: {str(e)}")
+    # 建议的典型重试逻辑：可添加计数器，在限定次数内尝试重新连接
+
+finally:
+    # 无论是否异常都会执行的清理代码
+    if 'driver' in locals():  # 检查driver变量是否已定义
+        driver.quit()        # 关闭驱动，释放资源
+    print("清理完成")         # 结束提示
