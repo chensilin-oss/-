@@ -1,0 +1,43 @@
+from appium import webdriver
+from appium.options.android import UiAutomator2Options
+import time
+
+desired_caps = {
+    "platformName": "Android",
+    "deviceName": "89ZLCUGUCE79MZI7",
+    "appium:appPackage": "com.youku.phone",
+    "appium:appActivity": "com.youku.v2.HomePageEntry",
+    "appium:automationName": "UiAutomator2",
+    "appium:noReset": True,
+    "appium:androidInstallTimeout": 180000,
+    "appium:uiautomator2ServerLaunchTimeout": 180000,
+    "appium:adbExecTimeout": 180000,
+    "appium:allowTestPackages": True,
+    "appium:enforceAppInstall": False,
+    "appium:adbInstallOptions": ["-t", "--abi armeabi-v7a"]
+}
+
+options = UiAutomator2Options().load_capabilities(desired_caps)
+
+try:
+    # 两种URL格式选其一（根据Appium版本）
+    driver = webdriver.Remote("http://127.0.0.1:4723/wd/hub", options=options)
+    # driver = webdriver.Remote("http://127.0.0.1:4723", options=options)
+
+    print("连接成功！等待1秒...")
+    time.sleep(1)
+    # driver.install_app(r"C:\Users\Administrator\OneDrive\桌面\pypycode\Appcode\iBiliPlayer-bili.apk")
+    if driver.is_app_installed("tv.danmaku.bili"):
+        print('已安装，开始卸载...')
+        driver.remove_app("tv.danmaku.bili")
+        print('卸载完成')
+
+except Exception as e:
+    print(f"连接失败: {str(e)}")
+    # 建议在此处添加重试逻辑
+
+finally:
+    if 'driver' in locals():
+        driver.quit()
+    print("清理完成")
+
