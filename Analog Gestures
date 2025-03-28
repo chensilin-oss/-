@@ -1,0 +1,48 @@
+from appium import webdriver
+from appium.options.android import UiAutomator2Options
+import time
+from selenium.webdriver.common.by import By  # 必须导入 By 类
+
+
+
+desired_caps = {
+    "platformName": "Android",
+    "deviceName": "89ZLCUGUCE79MZI7",
+    "appium:appPackage": "com.android.settings",
+    "appium:appActivity": "com.android.settings.Settings",
+    "appium:automationName": "UiAutomator2",
+    "appium:noReset": True,
+    "appium:androidInstallTimeout": 180000,
+    "appium:uiautomator2ServerLaunchTimeout": 180000,
+    "appium:adbExecTimeout": 180000,
+    "appium:allowTestPackages": True,
+    "appium:enforceAppInstall": False,
+    "appium:adbInstallOptions": ["-t", "--abi armeabi-v7a"]
+}
+
+options = UiAutomator2Options().load_capabilities(desired_caps)
+
+try:
+    driver = webdriver.Remote("http://127.0.0.1:4723/wd/hub", options=options)
+    print("连接成功！等待10秒...")
+    time.sleep(10)
+    # w, h = driver.get_window_size().values()
+    # driver.swipe(w // 2, int(h * 0.8), w // 2, int(h * 0.2), 1000)
+
+
+    el1=driver.find_element(By.XPATH,"//*[@text='WLAN']")
+    el2=driver.find_element(By.XPATH,"//*[@text='连接与共享']")
+    driver.scroll(el2,el1)
+    time.sleep(2)
+
+
+except Exception as e:
+    print(f"连接失败: {str(e)}")
+    # 建议在此处添加重试逻辑
+
+finally:
+    if 'driver' in locals():
+        driver.quit()
+    print("清理完成")
+
+
